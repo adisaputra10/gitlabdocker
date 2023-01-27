@@ -1,4 +1,4 @@
-version: '2.3'
+version: '3.4'
 
 services:
   redis:
@@ -7,18 +7,18 @@ services:
     command:
     - --loglevel warning
     volumes:
-    - redis-data:/data:Z
+    - /srv/docker/gitlab/redis:/var/lib/redis:Z
 
   postgresql:
     restart: always
     image: sameersbn/postgresql:12-20200524
     volumes:
-    - postgresql-data:/var/lib/postgresql:Z
+    - /srv/docker/gitlab/postgresql:/var/lib/postgresql:Z
     environment:
     - DB_USER=gitlab
     - DB_PASS=password
     - DB_NAME=gitlabhq_production
-    - DB_EXTENSION=pg_trgm,btree_gist
+    - DB_EXTENSION=pg_trgm
 
   gitlab:
     restart: always
@@ -27,16 +27,14 @@ services:
     - redis
     - postgresql
     ports:
-    - "80:80"
+    - "10080:80"
     - "10022:22"
     volumes:
-    - gitlab-data:/home/git/data:Z
-    healthcheck:
-      test: ["CMD", "/usr/local/sbin/healthcheck"]
-      interval: 5m
-      timeout: 10s
-      retries: 3
-      start_period: 5m
+    - /srv/docker/gitlab/gitlab:/home/git/data:Z
+    configs:
+      - gitlab-configs
+    secrets:
+      - gitlab-secrets
     environment:
     - DEBUG=false
 
@@ -154,11 +152,27 @@ services:
     - OAUTH_AUTH0_DOMAIN=
     - OAUTH_AUTH0_SCOPE=
 
+    - OAUTH2_GENERIC_APP_ID=
+    - OAUTH2_GENERIC_APP_SECRET=
+    - OAUTH2_GENERIC_CLIENT_SITE=
+    - OAUTH2_GENERIC_CLIENT_USER_INFO_URL=
+    - OAUTH2_GENERIC_CLIENT_AUTHORIZE_URL=
+    - OAUTH2_GENERIC_CLIENT_TOKEN_URL=
+    - OAUTH2_GENERIC_CLIENT_END_SESSION_ENDPOINT=
+    - OAUTH2_GENERIC_ID_PATH=
+    - OAUTH2_GENERIC_USER_UID=
+    - OAUTH2_GENERIC_USER_NAME=
+    - OAUTH2_GENERIC_USER_EMAIL=
+    - OAUTH2_GENERIC_NAME=
+
     - OAUTH_AZURE_API_KEY=
     - OAUTH_AZURE_API_SECRET=
     - OAUTH_AZURE_TENANT_ID=
 
-volumes:
-  redis-data:
-  postgresql-data:
-  gitlab-data:
+configs:
+  gitlab-configs:
+    file: ./gitlab.configs
+
+secrets:
+  gitlab-secrets:
+    file: ./gitlab.secrets

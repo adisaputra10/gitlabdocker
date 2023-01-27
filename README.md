@@ -1,7 +1,15 @@
-# sameersbn/gitlab:14.10.5
+# sameersbn/gitlab:15.8.0
 
 [![CircleCI](https://circleci.com/gh/sameersbn/docker-gitlab/tree/master.svg?style=svg)](https://circleci.com/gh/sameersbn/docker-gitlab/tree/master)
 
+- [Introduction](#introduction)
+    - [Changelog](Changelog.md)
+- [Contributing](#contributing)
+- [Team](#team)
+- [Issues](#issues)
+- [Announcements](https://github.com/sameersbn/docker-gitlab/issues/39)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
     - [Data Store](#data-store)
@@ -60,6 +68,77 @@
 - [Deploy in Docker Swarm mode, with HTTPS handled by Traefik proxy and Docker Registry](docs/docker-swarm-traefik-registry.md)
 - [References](#references)
 
+## Introduction
+
+Dockerfile to build a [GitLab](https://about.gitlab.com/) image for the [Docker](https://www.docker.com/products/docker-engine) opensource container platform.
+
+GitLab CE is set up in the Docker image using the [install from source](https://docs.gitlab.com/ce/install/installation.html) method as documented in the the official GitLab documentation.
+
+For other methods to install GitLab please refer to the [Official GitLab Installation Guide](https://about.gitlab.com/install/) which includes a [GitLab image for Docker](https://docs.gitlab.com/omnibus/docker/).
+
+## Contributing
+
+If you find this image useful here's how you can help:
+
+- Send a Pull Request with your awesome new features and bug fixes
+- Be a part of the community and help resolve [Issues](https://github.com/sameersbn/docker-gitlab/issues)
+- Support the development of this image with a [donation](http://www.damagehead.com/donate/)
+
+## Team
+
+- Niclas Mietz ([solidnerd](https://github.com/solidnerd))
+- Sameer Naik ([sameersbn](https://github.com/sameersbn))
+
+See [Contributors](../../graphs/contributors) for the complete list developers that have contributed to this project.
+
+## Issues
+
+Docker is a relatively new project and is active being developed and tested by a thriving community of developers and testers and every release of docker features many enhancements and bugfixes.
+
+Given the nature of the development and release cycle it is very important that you have the latest version of docker installed because any issue that you encounter might have already been fixed with a newer docker release.
+
+Install the most recent version of the Docker Engine for your platform using the [official Docker releases](http://docs.docker.com/engine/installation/), which can also be installed using:
+
+```bash
+wget -qO- https://get.docker.com/ | sh
+```
+
+Fedora and RHEL/CentOS users should try disabling selinux with `setenforce 0` and check if resolves the issue. If it does than there is not much that I can help you with. You can either stick with selinux disabled (not recommended by redhat) or switch to using ubuntu.
+
+You may also set `DEBUG=true` to enable debugging of the entrypoint script, which could help you pin point any configuration issues.
+
+If using the latest docker version and/or disabling selinux does not fix the issue then please file a issue request on the [issues](https://github.com/sameersbn/docker-gitlab/issues) page.
+
+In your issue report please make sure you provide the following information:
+
+- The host distribution and release version.
+- Output of the `docker version` command
+- Output of the `docker info` command
+- The `docker run` command you used to run the image (mask out the sensitive bits).
+
+## Prerequisites
+
+Your docker host needs to have 1GB or more of available RAM to run GitLab. Please refer to the GitLab [hardware requirements](https://github.com/gitlabhq/gitlabhq/blob/master/doc/install/requirements.md#hardware-requirements) documentation for additional information.
+
+## Installation
+
+Automated builds of the image are available on [Dockerhub](https://hub.docker.com/r/sameersbn/gitlab) and is the recommended method of installation.
+
+```bash
+docker pull sameersbn/gitlab:15.8.0
+```
+
+You can also pull the `latest` tag which is built from the repository *HEAD*
+
+```bash
+docker pull sameersbn/gitlab:latest
+```
+
+Alternatively you can build the image locally.
+
+```bash
+docker build -t sameersbn/gitlab github.com/sameersbn/docker-gitlab
+```
 
 ## Quick Start
 
@@ -115,7 +194,7 @@ docker run --name gitlab -d \
     --env 'GITLAB_SECRETS_SECRET_KEY_BASE=long-and-random-alpha-numeric-string' \
     --env 'GITLAB_SECRETS_OTP_KEY_BASE=long-and-random-alpha-numeric-string' \
     --volume /srv/docker/gitlab/gitlab:/home/git/data \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 *Please refer to [Available Configuration Parameters](#available-configuration-parameters) to understand `GITLAB_PORT` and other configuration options*
@@ -136,7 +215,7 @@ GitLab is a code hosting software and as such you don't want to lose your code w
 
 - `/home/git/data`
 
-*Note: that if you are using the `docker-compose` approach, you must "inpect" the volumes (```docker volume inpect```) to check the mounted path.*
+*Note: that if you are using the `docker-compose` approach, you must "inspect" the volumes (```docker volume inspect```) to check the mounted path.*
 
 SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
 
@@ -150,7 +229,7 @@ Volumes can be mounted in docker by specifying the `-v` option in the docker run
 ```bash
 docker run --name gitlab -d \
     --volume /srv/docker/gitlab/gitlab:/home/git/data \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 ### Database
@@ -185,7 +264,7 @@ docker run --name gitlab -d \
     --env 'DB_NAME=gitlabhq_production' \
     --env 'DB_USER=gitlab' --env 'DB_PASS=password' \
     --volume /srv/docker/gitlab/gitlab:/home/git/data \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 ##### Linking to PostgreSQL Container
@@ -229,7 +308,7 @@ We are now ready to start the GitLab application.
 ```bash
 docker run --name gitlab -d --link gitlab-postgresql:postgresql \
     --volume /srv/docker/gitlab/gitlab:/home/git/data \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the postgresql container as they are specified in the `docker run` command for the postgresql container. This is made possible using the magic of docker links and works with the following images:
@@ -268,7 +347,7 @@ The image can be configured to use an external redis server. The configuration s
 ```bash
 docker run --name gitlab -it --rm \
     --env 'REDIS_HOST=192.168.1.100' --env 'REDIS_PORT=6379' \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 #### Linking to Redis Container
@@ -295,7 +374,7 @@ We are now ready to start the GitLab application.
 
 ```bash
 docker run --name gitlab -d --link gitlab-redis:redisio \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 #### Mail
@@ -308,7 +387,7 @@ If you are using Gmail then all you need to do is:
 docker run --name gitlab -d \
     --env 'SMTP_USER=USER@gmail.com' --env 'SMTP_PASS=PASSWORD' \
     --volume /srv/docker/gitlab/gitlab:/home/git/data \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 Please refer the [Available Configuration Parameters](#available-configuration-parameters) section for the list of SMTP parameters that can be specified.
@@ -328,7 +407,7 @@ docker run --name gitlab -d \
     --env 'IMAP_USER=USER@gmail.com' --env 'IMAP_PASS=PASSWORD' \
     --env 'GITLAB_INCOMING_EMAIL_ADDRESS=USER+%{key}@gmail.com' \
     --volume /srv/docker/gitlab/gitlab:/home/git/data \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 Please refer the [Available Configuration Parameters](#available-configuration-parameters) section for the list of IMAP parameters that can be specified.
@@ -412,7 +491,7 @@ docker run --name gitlab -d \
     --env 'GITLAB_SSH_PORT=10022' --env 'GITLAB_PORT=10443' \
     --env 'GITLAB_HTTPS=true' --env 'SSL_SELF_SIGNED=true' \
     --volume /srv/docker/gitlab/gitlab:/home/git/data \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 In this configuration, any requests made over the plain http protocol will automatically be redirected to use the https protocol. However, this is not optimal when using a load balancer.
@@ -428,7 +507,7 @@ docker run --name gitlab -d \
  --env 'GITLAB_HTTPS=true' --env 'SSL_SELF_SIGNED=true' \
  --env 'NGINX_HSTS_MAXAGE=2592000' \
  --volume /srv/docker/gitlab/gitlab:/home/git/data \
- sameersbn/gitlab:14.10.5
+ sameersbn/gitlab:15.8.0
 ```
 
 If you want to completely disable HSTS set `NGINX_HSTS_ENABLED` to `false`.
@@ -451,7 +530,7 @@ docker run --name gitlab -d \
     --env 'GITLAB_SSH_PORT=10022' --env 'GITLAB_PORT=443' \
     --env 'GITLAB_HTTPS=true' --env 'SSL_SELF_SIGNED=true' \
     --volume /srv/docker/gitlab/gitlab:/home/git/data \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 Again, drop the `--env 'SSL_SELF_SIGNED=true'` option if you are using CA certified SSL certificates.
@@ -499,7 +578,7 @@ Let's assume we want to deploy our application to '/git'. GitLab needs to know t
 docker run --name gitlab -it --rm \
     --env 'GITLAB_RELATIVE_URL_ROOT=/git' \
     --volume /srv/docker/gitlab/gitlab:/home/git/data \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 GitLab will now be accessible at the `/git` path, e.g. `http://www.example.com/git`.
@@ -610,6 +689,8 @@ Once you have the Client ID, Client secret and Tenant ID generated, configure th
 
 For example, if your Client ID is `xxx`, the Client secret is `yyy` and the Tenant ID is `zzz`, then adding `--env 'OAUTH_AZURE_API_KEY=xxx' --env 'OAUTH_AZURE_API_SECRET=yyy' --env 'OAUTH_AZURE_TENANT_ID=zzz'` to the docker run command enables support for Microsoft Azure OAuth.
 
+Also you can configure v2 endpoint (`azure_activedirectory_v2`) by using `OAUTH_AZURE_ACTIVEDIRECTORY_V2_CLIENT_ID`, `OAUTH_AZURE_ACTIVEDIRECTORY_V2_CLIENT_SECRET` and `OAUTH_AZURE_ACTIVEDIRECTORY_V2_TENANT_ID` environment variables. Optionally you can change label of login button using the `OAUTH_AZURE_ACTIVEDIRECTORY_V2_LABEL`.
+
 ##### Generic OAuth2
 
 To enable the Generic OAuth2 provider, you must register your application with your provider. You also need to confirm OAuth2 provider app's ID and secret, the client options and the user's response structure.
@@ -679,14 +760,14 @@ Also the container processes seem to be executed as the host's user/group `1000`
 ```bash
 docker run --name gitlab -it --rm [options] \
     --env "USERMAP_UID=$(id -u git)" --env "USERMAP_GID=$(id -g git)" \
-    sameersbn/gitlab:14.10.5
+    sameersbn/gitlab:15.8.0
 ```
 
 When changing this mapping, all files and directories in the mounted data volume `/home/git/data` have to be re-owned by the new ids. This can be achieved automatically using the following command:
 
 ```bash
 docker run --name gitlab -d [OPTIONS] \
-    sameersbn/gitlab:14.10.5 app:sanitize
+    sameersbn/gitlab:15.8.0 app:sanitize
 ```
 
 #### Piwik
@@ -2115,6 +2196,22 @@ Azure Client secret. No defaults.
 
 Azure Tenant ID. No defaults.
 
+#### `OAUTH_AZURE_ACTIVEDIRECTORY_V2_CLIENT_ID`
+
+Client ID for oauth provider `azure_activedirectory_v2`. If not set, corresponding oauth provider configuration will be removed from `gitlab.yml` during container startup. No defaults.
+
+#### `OAUTH_AZURE_ACTIVEDIRECTORY_V2_CLIENT_SECRET`
+
+Client secret for oauth provider `azure_activedirectory_v2`. If not set, corresponding oauth provider configuration will be removed from `gitlab.yml` during container startup. No defaults.
+
+#### `OAUTH_AZURE_ACTIVEDIRECTORY_V2_TENANT_ID`
+
+Tenant ID for oauth provider `azure_activedirectory_v2`. If not set, corresponding oauth provider configuration will be removed from `gitlab.yml` during container startup. No defaults.
+
+#### `OAUTH_AZURE_ACTIVEDIRECTORY_V2_LABEL`
+
+Optional label for login button for `azure_activedirectory_v2`. Defaults to `Azure AD v2`
+
 ##### `OAUTH2_GENERIC_APP_ID`
 
 Your OAuth2 App ID. No defaults.
@@ -2328,7 +2425,7 @@ Execute the rake task to create a backup.
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
-    sameersbn/gitlab:14.10.5 app:rake gitlab:backup:create
+    sameersbn/gitlab:15.8.0 app:rake gitlab:backup:create
 ```
 
 A backup will be created in the backups folder of the [Data Store](#data-store). You can change the location of the backups using the `GITLAB_BACKUP_DIR` configuration parameter.
@@ -2363,14 +2460,14 @@ you need to prepare the database:
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
-    sameersbn/gitlab:14.10.5 app:rake db:setup
+    sameersbn/gitlab:15.8.0 app:rake db:setup
 ```
 
 Execute the rake task to restore a backup. Make sure you run the container in interactive mode `-it`.
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
-    sameersbn/gitlab:14.10.5 app:rake gitlab:backup:restore
+    sameersbn/gitlab:15.8.0 app:rake gitlab:backup:restore
 ```
 
 The list of all available backups will be displayed in reverse chronological order. Select the backup you want to restore and continue.
@@ -2379,7 +2476,7 @@ To avoid user interaction in the restore operation, specify the timestamp, date 
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
-    sameersbn/gitlab:14.10.5 app:rake gitlab:backup:restore BACKUP=1515629493_2020_12_06_13.0.6
+    sameersbn/gitlab:15.8.0 app:rake gitlab:backup:restore BACKUP=1515629493_2020_12_06_13.0.6
 ```
 
 When using `docker-compose` you may use the following command to execute the restore.
@@ -2428,7 +2525,7 @@ The `app:rake` command allows you to run gitlab rake tasks. To run a rake task s
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
-    sameersbn/gitlab:14.10.5 app:rake gitlab:env:info
+    sameersbn/gitlab:15.8.0 app:rake gitlab:env:info
 ```
 
 You can also use `docker exec` to run raketasks on running gitlab instance. For example,
@@ -2441,7 +2538,7 @@ Similarly, to import bare repositories into GitLab project instance
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
-    sameersbn/gitlab:14.10.5 app:rake gitlab:import:repos
+    sameersbn/gitlab:15.8.0 app:rake gitlab:import:repos
 ```
 
 Or
@@ -2472,7 +2569,7 @@ Copy all the **bare** git repositories to the `repositories/` directory of the [
 
 ```bash
 docker run --name gitlab -it --rm [OPTIONS] \
-    sameersbn/gitlab:14.10.5 app:rake gitlab:import:repos
+    sameersbn/gitlab:15.8.0 app:rake gitlab:import:repos
 ```
 
 Watch the logs and your repositories should be available into your new gitlab container.
@@ -2496,12 +2593,12 @@ To upgrade to newer gitlab releases, simply follow this 4 step upgrade procedure
 
 > **Note**
 >
-> Upgrading to `sameersbn/gitlab:14.10.5` from `sameersbn/gitlab:7.x.x` can cause issues. It is therefore required that you first upgrade to `sameersbn/gitlab:8.0.5-1` before upgrading to `sameersbn/gitlab:8.1.0` or higher.
+> Upgrading to `sameersbn/gitlab:15.8.0` from `sameersbn/gitlab:7.x.x` can cause issues. It is therefore required that you first upgrade to `sameersbn/gitlab:8.0.5-1` before upgrading to `sameersbn/gitlab:8.1.0` or higher.
 
 - **Step 1**: Update the docker image.
 
 ```bash
-docker pull sameersbn/gitlab:14.10.5
+docker pull sameersbn/gitlab:15.8.0
 ```
 
 - **Step 2**: Stop and remove the currently running image
@@ -2526,7 +2623,7 @@ Replace `x.x.x` with the version you are upgrading from. For example, if you are
 > **Note**: Since GitLab `8.11.0` you need to provide the `GITLAB_SECRETS_SECRET_KEY_BASE` and `GITLAB_SECRETS_OTP_KEY_BASE` parameters while starting the image. These should initially both have the same value as the contents of the `/home/git/data/.secret` file. See [Available Configuration Parameters](#available-configuration-parameters) for more information on these parameters.
 
 ```bash
-docker run --name gitlab -d [OPTIONS] sameersbn/gitlab:14.10.5
+docker run --name gitlab -d [OPTIONS] sameersbn/gitlab:15.8.0
 ```
 
 ### Shell Access
@@ -2564,7 +2661,7 @@ version: '2.3'
 
 services:
   gitlab:
-    image: sameersbn/gitlab:14.10.5
+    image: sameersbn/gitlab:15.8.0
     healthcheck:
       test: ["CMD", "/usr/local/sbin/healthcheck"]
       interval: 1m
